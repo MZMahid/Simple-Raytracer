@@ -8,7 +8,8 @@ class hittable {
 private:
 
 public:
-    virtual void hit(const ray& r,const hit_record& record){}
+    virtual ~hittable() = default;
+    virtual void hit(const ray& r, hit_record& record) const = 0;
 
 };
 

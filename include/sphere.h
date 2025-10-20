@@ -10,7 +10,7 @@ public:
     double radius;
     sphere(const vec3& c, const double& r) : center{c}, radius{r} {}
 
-    void hit(const ray& ray, hit_record& rec){
+    void hit(const ray& ray, hit_record& rec) const override{
         vec3 d = ray.get_direction();
         double a = dot(d, d);
         vec3 dis = center - ray.get_origin();
@@ -20,7 +20,6 @@ public:
         if( (b * b - 4*a*c) > 0 ){
             rec.isHit = true;
         }
-        else{ rec.isHit = false; }
     }
 };
 

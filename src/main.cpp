@@ -1,8 +1,15 @@
 #include <iostream>
+#include <vector>
+#include <memory>
 #include"global.h"
 
-color get_ray_col(const ray& r, sphere& sp, hit_record& rec){
-    sp.hit(r, rec);
+color get_ray_col(const ray &r, hit_record &rec, sphere& sp
+                , const std::vector<std::shared_ptr<hittable>>& world)
+{
+    for(const auto& obj : world){
+        obj->hit(r, rec);
+    }
+    // sp.hit(r, rec);
 
     if(rec.isHit){
         return color(1, 0, 0);
@@ -43,6 +50,13 @@ int main(){
     //main render loop
     sphere sp(point3(0, 0, -2), 0.7);
 
+    std::vector<std::shared_ptr<hittable>> world;
+
+    auto ball = std::make_shared<sphere>(point3(0, 0.5, -2), 0.5);
+    auto ground = std::make_shared<sphere>(point3(-1, -100, -45), 100);
+
+    world.push_back(ball);
+    world.push_back(ground);
     std::cout << "P3\n" << world_width << " " << world_height << '\n' <<"255\n";
     for(int j = 0 ; j < world_height ; j++){
         for(int i = 0 ; i < world_width ; i++){
@@ -52,7 +66,7 @@ int main(){
             ray ray(cam_pos, (pix_center - cam_pos));
             hit_record rec;
             
-            color rgb = get_ray_col(ray, sp, rec);
+            color rgb = get_ray_col(ray, rec, sp, world);
 
 
             std::cout << int(rgb.x() * 255.0) << " " << int(rgb.y() * 255.0) 
