@@ -11,11 +11,12 @@ color get_ray_col(const ray &r, hit_record &rec, sphere& sp
     }
     // sp.hit(r, rec);
 
+    vec3 unit_direction = unit_vector(r.get_direction());
     if(rec.isHit){
-        return color(1, 0, 0);
+        color N = rec.normal;
+        return color(N.x() + 1, N.y() + 1, N.z() + 1) * 0.5;
     }
     else{
-        vec3 unit_direction = unit_vector(r.get_direction());
         auto a = 0.5 * (unit_direction.y() + 1.0);
         return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
     }

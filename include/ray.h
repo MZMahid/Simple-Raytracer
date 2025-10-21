@@ -13,6 +13,10 @@ public:
     point3 get_origin() const{ return orig; }
     vec3 get_direction() const { return dir; }
 
+    vec3 at(const double& t) const{
+        return orig + (dir * t);
+    }
+
 };
 
 

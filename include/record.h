@@ -8,6 +8,7 @@ class hit_record{
 public:
     bool isHit = false;
     point3 p;
+    double t;
     vec3 normal;
 
 
