@@ -10,8 +10,7 @@ public:
     point3 p;
     double t;
     vec3 normal;
-
-
+    color hit_surf_col;
 };
 
 

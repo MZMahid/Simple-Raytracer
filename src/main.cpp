@@ -3,18 +3,24 @@
 #include <memory>
 #include"global.h"
 
-color get_ray_col(const ray &r, hit_record &rec, sphere& sp
+color get_ray_col(const ray &r, hit_record &rec
                 , const std::vector<std::shared_ptr<hittable>>& world)
 {
+    // color current_surf_col;
     for(const auto& obj : world){
         obj->hit(r, rec);
+
+        //stupid complicated casting codes that doesn't work
+        // std::shared_ptr<sphere> obj_dirived = std::dynamic_pointer_cast<sphere>(obj);
+        // if(obj_dirived){
+        //     current_surf_col = obj_dirived->surf_col;
+        // }
     }
-    // sp.hit(r, rec);
 
     vec3 unit_direction = unit_vector(r.get_direction());
     if(rec.isHit){
         color N = rec.normal;
-        return color(N.x() + 1, N.y() + 1, N.z() + 1) * 0.5;
+        return color(N.x() + 1, N.y() + 1, N.z() + 1) * 0.5 * rec.hit_surf_col;
     }
     else{
         auto a = 0.5 * (unit_direction.y() + 1.0);
@@ -30,7 +36,6 @@ int main(){
 
     double view_height = 2.0;
     double view_width = view_height * (double(world_width) / world_height);
-    std::clog << view_width << " " << view_height << "\n";
 
     point3 cam_pos(0, 0, 0);
 
@@ -49,15 +54,14 @@ int main(){
     point3 pix_00 = corner + (view_w_unit + view_h_unit) / 2;
 
     //main render loop
-    sphere sp(point3(0, 0, -2), 0.7);
 
     std::vector<std::shared_ptr<hittable>> world;
 
-    auto ball = std::make_shared<sphere>(point3(0, 0.5, -2), 0.5);
-    auto ground = std::make_shared<sphere>(point3(-1, -100, -45), 100);
+    auto ground = std::make_shared<sphere>(point3(2, 0, -3), 1.2, color(1, 0, 0));
+    auto ball = std::make_shared<sphere>(point3(0, 0, -2), 1, color(0, 1, 0));
 
-    world.push_back(ball);
     world.push_back(ground);
+    world.push_back(ball);
     std::cout << "P3\n" << world_width << " " << world_height << '\n' <<"255\n";
     for(int j = 0 ; j < world_height ; j++){
         for(int i = 0 ; i < world_width ; i++){
@@ -67,7 +71,7 @@ int main(){
             ray ray(cam_pos, (pix_center - cam_pos));
             hit_record rec;
             
-            color rgb = get_ray_col(ray, rec, sp, world);
+            color rgb = get_ray_col(ray, rec, world);
 
 
             std::cout << int(rgb.x() * 255.0) << " " << int(rgb.y() * 255.0) 
@@ -75,3 +79,4 @@ int main(){
         }
     }
 }
+

@@ -8,7 +8,8 @@ class sphere : public hittable {
 public:
     vec3 center;
     double radius;
-    sphere(const vec3& c, const double& r) : center{c}, radius{r} {}
+    color surf_col;
+    sphere(const vec3& c, const double& r,const color& col) : center{c}, radius{r}, surf_col{col} {}
 
     void hit(const ray& ray, hit_record& rec) const override{
         vec3 d = ray.get_direction();
@@ -37,6 +38,7 @@ public:
         if (dot(rec.normal, ray.get_direction()) >= 0){
             rec.normal = -rec.normal;   
         }
+        rec.hit_surf_col = surf_col;
     }
 };
 
