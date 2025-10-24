@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <random>
 #include"global.h"
 #include"interval.h"
 
-color get_ray_col(const ray &r, hit_record &rec
-                , const std::vector<std::shared_ptr<hittable>>& world)
+    color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_ptr<hittable>> &world)
 {
     const double infinity = std::numeric_limits<double>::infinity();
     interval limit(0, infinity);
@@ -30,6 +30,7 @@ color get_ray_col(const ray &r, hit_record &rec
 }
 
 int main(){
+    int samples = 10;
 
     int world_width = 400;
     double aspect_ratio = 16.0/ 9.0;
@@ -45,14 +46,14 @@ int main(){
     vec3 view_w_vec = vec3(view_width, 0, 0);
     vec3 view_h_vec = vec3(0, -view_height ,0);
 
-    vec3 view_w_unit = view_w_vec / world_width;
-    vec3 view_h_unit = view_h_vec / world_height;
+    vec3 view_w_delta = view_w_vec / world_width;
+    vec3 view_h_delta = view_h_vec / world_height;
 
     point3 corner = cam_pos 
                       - vec3(0, 0, focal_lenght)
                       - view_w_vec / 2
                       - view_h_vec / 2;
-    point3 pix_00 = corner + (view_w_unit + view_h_unit) / 2;
+    point3 pix_00 = corner + (view_w_delta + view_h_delta) / 2;
 
     //main render loop
 
@@ -64,19 +65,28 @@ int main(){
     world.push_back(green);
     world.push_back(red);
 
-
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(-0.5, 0.5);
     std::cout << "P3\n" << world_width << " " << world_height << '\n' <<"255\n";
     for(int j = 0 ; j < world_height ; j++){
         for(int i = 0 ; i < world_width ; i++){
 
-            point3 pix_center = pix_00 + (i * view_w_unit) + (j * view_h_unit);
+            point3 pix_center = pix_00 + (i * view_w_delta) + (j *view_h_delta);
             //construct the ray
-            ray ray(cam_pos, (pix_center - cam_pos));
-            hit_record rec;
-            
-            color rgb = get_ray_col(ray, rec, world);
+            color rgb(0, 0, 0);
 
 
+            for (int k = 0; k < samples; ++k)
+            {
+                vec3 offset = vec3( distribution(generator) * view_w_delta.x(),
+                                    distribution(generator) * view_h_delta.y(),
+                                    0);
+                ray ray(cam_pos, (pix_center - cam_pos) + offset);
+                hit_record rec;
+                rgb += get_ray_col(ray, rec, world);
+            }
+
+            rgb /= samples;
             std::cout << int(rgb.x() * 255.9) << " " << int(rgb.y() * 255.9) 
                       << " " << int(rgb.z() * 255.9) << '\n';
         }
