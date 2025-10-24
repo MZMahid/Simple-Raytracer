@@ -3,13 +3,15 @@
 
 #include"ray.h"
 #include"record.h"
+#include"interval.h"
 
 class hittable {
 private:
 
 public:
     virtual ~hittable() = default;
-    virtual void hit(const ray& r, hit_record& record) const = 0;
+    virtual bool hit(const ray& r, const interval& limit, hit_record& record)
+                                                                     const = 0;
 
 };
 

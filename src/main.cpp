@@ -2,23 +2,24 @@
 #include <vector>
 #include <memory>
 #include"global.h"
+#include"interval.h"
 
 color get_ray_col(const ray &r, hit_record &rec
                 , const std::vector<std::shared_ptr<hittable>>& world)
 {
-    // color current_surf_col;
-    for(const auto& obj : world){
-        obj->hit(r, rec);
+    const double infinity = std::numeric_limits<double>::infinity();
+    interval limit(0, infinity);
+    bool hit_anything = false;
 
-        //stupid complicated casting codes that doesn't work
-        // std::shared_ptr<sphere> obj_dirived = std::dynamic_pointer_cast<sphere>(obj);
-        // if(obj_dirived){
-        //     current_surf_col = obj_dirived->surf_col;
-        // }
+    for(const auto& obj : world){
+        if(obj->hit(r, limit, rec)){
+            hit_anything = true;
+            limit.max = rec.t;
+        }
     }
 
     vec3 unit_direction = unit_vector(r.get_direction());
-    if(rec.isHit){
+    if(hit_anything){
         color N = rec.normal;
         return color(N.x() + 1, N.y() + 1, N.z() + 1) * 0.5 * rec.hit_surf_col;
     }
@@ -57,11 +58,13 @@ int main(){
 
     std::vector<std::shared_ptr<hittable>> world;
 
-    auto ground = std::make_shared<sphere>(point3(2, 0, -3), 1.2, color(1, 0, 0));
-    auto ball = std::make_shared<sphere>(point3(0, 0, -2), 1, color(0, 1, 0));
+    auto red = std::make_shared<sphere>(point3(1.4, 0, -2), 1, color(1, 0, 0));
+    auto green = std::make_shared<sphere>(point3(0, 0, -3), 1, color(0, 1, 0));
 
-    world.push_back(ground);
-    world.push_back(ball);
+    world.push_back(green);
+    world.push_back(red);
+
+
     std::cout << "P3\n" << world_width << " " << world_height << '\n' <<"255\n";
     for(int j = 0 ; j < world_height ; j++){
         for(int i = 0 ; i < world_width ; i++){
@@ -74,8 +77,8 @@ int main(){
             color rgb = get_ray_col(ray, rec, world);
 
 
-            std::cout << int(rgb.x() * 255.0) << " " << int(rgb.y() * 255.0) 
-                      << " " << int(rgb.z() * 255.0) << '\n';
+            std::cout << int(rgb.x() * 255.9) << " " << int(rgb.y() * 255.9) 
+                      << " " << int(rgb.z() * 255.9) << '\n';
         }
     }
 }
