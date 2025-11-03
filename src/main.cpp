@@ -76,7 +76,7 @@ int main(){
     vec3 view_w_vec = vec3(view_width, 0, 0);
     vec3 view_h_vec = vec3(0, -view_height ,0); // reverse the y cordinate to be up as positive
 
-    //for every unit of x or y in scene how much lenght in vieport
+    //for every unit of x or y in scene how much lenght in viewport
     vec3 view_w_delta = view_w_vec / world_width;
     vec3 view_h_delta = view_h_vec / world_height;
 
