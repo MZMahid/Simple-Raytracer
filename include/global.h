@@ -5,6 +5,7 @@
 #include"ray.h"
 #include"record.h"
 #include"hittable.h"
-#include "sphere.h"
+#include"sphere.h"
+#include"plane.h"
 
 #endif

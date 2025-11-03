@@ -21,7 +21,7 @@ color get_ray_col(const ray &r, hit_record &rec
         }
     }
 
-    point3 light_pos = point3(200, 200, -1); // point light
+    point3 light_pos = point3(50, 50, -1); // point light
     vec3 light_dir = unit_vector(light_pos - rec.p); // direction hit point to light
     ray shadow_ray(rec.p, light_dir); // construct shadow ray
     hit_record shadow_rec;
@@ -30,7 +30,6 @@ color get_ray_col(const ray &r, hit_record &rec
         if (objj->hit(shadow_ray, interval(0.01, infinity), shadow_rec))
         {
             inShadow = true;
-            
             break;
             
         }
@@ -40,9 +39,10 @@ color get_ray_col(const ray &r, hit_record &rec
     color base = rec.hit_surf_col;
 
     if(hit_anything){ // something hit! now is it in shadow or not.
+
         color N = unit_vector(rec.normal);
         if(inShadow){
-            return base * 0.15; // 15% ambient lighting in shadow
+            return base * 0.20; // 20% ambient lighting in shadow
         }
         else{
             double diffuse = std::max(0.0, dot(N, light_dir));
@@ -50,6 +50,7 @@ color get_ray_col(const ray &r, hit_record &rec
             return base * lighting;                // remove the std::min, just multiply
         }
     }
+
 
     else{ // default sky color if the ray hit nothing in the scene
         auto a = 0.5 * (unit_direction.y() + 1.0);
@@ -91,9 +92,11 @@ int main(){
 
     auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(1, 0, 0));
     auto ground = std::make_shared<sphere>(point3(0, -100.5, -1), 100.0, color(0.9, 0.9, 0.8));
+    auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.25, 1, 0), color(1, 1, 0));
 
     world.push_back(ball);
-    world.push_back(ground);
+    // world.push_back(ground);
+    world.push_back(sample_plane);
 
     // random seed generator
     std::default_random_engine generator;
