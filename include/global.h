@@ -7,5 +7,6 @@
 #include"hittable.h"
 #include"sphere.h"
 #include"plane.h"
+#include"triangle.h"
 
 #endif

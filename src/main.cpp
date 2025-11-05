@@ -6,12 +6,11 @@
 #include"interval.h"
 
 //this function runs for every single ray and returns final color for that ray.
-color get_ray_col(const ray &r, hit_record &rec
-                , const std::vector<std::shared_ptr<hittable>> &world)
+color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_ptr<hittable>> &world)
 {
     const double infinity = std::numeric_limits<double>::infinity();
     interval limit(0.001, infinity); // 0.001 prevents self-intersection artifacts
-    bool hit_anything = false; 
+    bool hit_anything = false;
     bool inShadow = false;
 
     for(const auto& obj : world){ // single ray check for any hit on all the objects in scene
@@ -21,7 +20,7 @@ color get_ray_col(const ray &r, hit_record &rec
         }
     }
 
-    point3 light_pos = point3(50, 50, -1); // point light
+    point3 light_pos = point3(5, 5, 1); // point light
     vec3 light_dir = unit_vector(light_pos - rec.p); // direction hit point to light
     ray shadow_ray(rec.p, light_dir); // construct shadow ray
     hit_record shadow_rec;
@@ -42,12 +41,12 @@ color get_ray_col(const ray &r, hit_record &rec
 
         color N = unit_vector(rec.normal);
         if(inShadow){
-            return base * 0.20; // 20% ambient lighting in shadow
+            return base * 0.2; // 20% ambient lighting in shadow
         }
         else{
             double diffuse = std::max(0.0, dot(N, light_dir));
             double lighting = 0.2 + 0.8 * diffuse; // ambient + diffuse
-            return base * lighting;                // remove the std::min, just multiply
+            return base * lighting ;
         }
     }
 
@@ -59,7 +58,7 @@ color get_ray_col(const ray &r, hit_record &rec
 }
 
 int main(){
-    int samples = 10;
+    int samples = 1;
 
     int world_width = 400;
     double aspect_ratio = 16.0/ 9.0;
@@ -90,13 +89,15 @@ int main(){
 
     std::vector<std::shared_ptr<hittable>> world;
 
-    auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(1, 0, 0));
-    auto ground = std::make_shared<sphere>(point3(0, -100.5, -1), 100.0, color(0.9, 0.9, 0.8));
-    auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.25, 1, 0), color(1, 1, 0));
+    auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(0.5, 1, 0));
+    // auto ground = std::make_shared<sphere>(point3(0, -100.5, -1), 100.0, color(0.9, 0.9, 0.8));
+    auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.2, 1, 0), color(1, 1, 0));
+    auto sample_triangle = std::make_shared<triangle>(point3(0, 1, -1), point3(-2, -1, -1), point3(2, -1, -1));
 
     world.push_back(ball);
     // world.push_back(ground);
     world.push_back(sample_plane);
+    world.push_back(sample_triangle);
 
     // random seed generator
     std::default_random_engine generator;
