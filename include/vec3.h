@@ -110,4 +110,21 @@ inline vec3 unit_vector(const vec3 &v)
     return v / v.length();
 }
 
+inline double random_double(double min, double max) {
+    return min + (max - min) * (rand() / (RAND_MAX + 1.0));
+}
+
+vec3 random_in_unit_sphere() {
+    while (true) {
+        auto p = vec3(random_double(-1,1), random_double(-1,1), random_double(-1,1));
+        if (dot(p,p) >= 1) continue;
+        return p;
+    }
+}
+
+vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
+
 #endif
