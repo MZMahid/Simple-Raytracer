@@ -44,9 +44,16 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
             return base * 0.2; // 20% ambient lighting in shadow
         }
         else{
-            double diffuse = std::max(0.0, dot(N, light_dir));
-            double lighting = 0.2 + 0.8 * diffuse; // ambient + diffuse
-            return base * lighting ;
+            int sample = 100;
+            double mean_lightning = 0;
+            for(int i = 0 ; i < sample ; ++i){
+                vec3 scatter_lightDir = light_dir + (random_in_unit_sphere() * 0.05);
+                double diffuse = std::max(0.0, dot(N, scatter_lightDir));
+                double lighting = 0.2 + 0.8 * diffuse; // ambient + diffuse
+                mean_lightning += lighting;
+            }
+            mean_lightning /= sample;
+            return base * mean_lightning;
         }
     }
 
@@ -96,8 +103,8 @@ int main(){
 
     world.push_back(ball);
     // world.push_back(ground);
-    world.push_back(sample_plane);
-    world.push_back(sample_triangle);
+    // world.push_back(sample_plane);
+    // world.push_back(sample_triangle);
 
     // random seed generator
     std::default_random_engine generator;
