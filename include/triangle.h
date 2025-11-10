@@ -32,9 +32,9 @@ public:
         if (dot(C0, norm) >= 0 && dot(C1, norm) >= 0 && dot(C2, norm) >= 0) {
             rec.t = t;
             rec.p = p;
+            rec.normal = norm;
             if (dot(ray.get_direction(), rec.normal) > 0)
                 rec.normal = -rec.normal;
-            rec.normal = norm;
             rec.hit_surf_col = color(1, 0, 0);
             return true;
         }
