@@ -21,12 +21,15 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
     }
 
     point3 light_pos = point3(5, 5, 1); // point light
-    vec3 light_dir = unit_vector(light_pos - rec.p); // direction hit point to light
+    vec3 to_light = light_pos - rec.p; // direction hit point to light
+    double light_distance = to_light.length();
+    vec3 light_dir = to_light / light_distance;
+
     ray shadow_ray(rec.p, light_dir); // construct shadow ray
     hit_record shadow_rec;
     for (const auto &objj : world) // shadow ray check if there is any blockage between hitpoint and light source
     {
-        if (objj->hit(shadow_ray, interval(0.01, infinity), shadow_rec))
+        if (objj->hit(shadow_ray, interval(0.01, light_distance), shadow_rec))
         {
             inShadow = true;
             break;
@@ -44,7 +47,7 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
             return base * 0.2; // 20% ambient lighting in shadow
         }
         else{
-            int sample = 100;
+            int sample = 10;
             double mean_lightning = 0;
             for(int i = 0 ; i < sample ; ++i){
                 vec3 scatter_lightDir = light_dir + (random_in_unit_sphere() * 0.05);
