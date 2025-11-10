@@ -4,6 +4,7 @@
 #include <random>
 #include"global.h"
 #include"interval.h"
+#include"obj_loader.h"
 
 //this function runs for every single ray and returns final color for that ray.
 color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_ptr<hittable>> &world)
@@ -99,15 +100,23 @@ int main(){
 
     std::vector<std::shared_ptr<hittable>> world;
 
-    auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(0.5, 1, 0));
+    // auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(0.5, 1, 0));
     // auto ground = std::make_shared<sphere>(point3(0, -100.5, -1), 100.0, color(0.9, 0.9, 0.8));
-    auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.2, 1, 0), color(1, 1, 0));
-    auto sample_triangle = std::make_shared<triangle>(point3(0, 1, -1), point3(-2, -1, -1), point3(2, -1, -1));
+    // auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.2, 1, 0), color(1, 1, 0));
+    // auto sample_triangle = std::make_shared<triangle>(point3(0, 1, -1), point3(-2, -1, -1), point3(2, -1, -1));
 
-    world.push_back(ball);
+    // world.push_back(ball);
     // world.push_back(ground);
     // world.push_back(sample_plane);
     // world.push_back(sample_triangle);
+
+    auto mesh = loadOBJ("/home/mahid/Dev/Projects/simple_Raytracer/src/test.obj", color(0.7, 0.7, 0.9));
+    for (auto& tri : mesh){
+        auto temp = std::make_shared<triangle>(tri);
+        std::clog << "lol";
+        world.push_back(temp);
+    }
+
 
     // random seed generator
     std::default_random_engine generator;
