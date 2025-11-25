@@ -21,34 +21,35 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
         }
     }
 
-    point3 light_pos = point3(5, 5, 1); // point light
-    vec3 to_light = light_pos - rec.p; // direction hit point to light
-    double light_distance = to_light.length();
-    vec3 light_dir = to_light / light_distance;
-
-    ray shadow_ray(rec.p, light_dir); // construct shadow ray
-    hit_record shadow_rec;
-    for (const auto &objj : world) // shadow ray check if there is any blockage between hitpoint and light source
-    {
-        if (objj->hit(shadow_ray, interval(0.01, light_distance), shadow_rec))
-        {
-            inShadow = true;
-            break;
-            
-        }
-    }
-
     vec3 unit_direction = unit_vector(r.get_direction());
-    color base = rec.hit_surf_col;
+
 
     if(hit_anything){ // something hit! now is it in shadow or not.
+        color base = rec.hit_surf_col;
+
+        point3 light_pos = point3(1, 1, 0.5); // point light
+        vec3 to_light = light_pos - rec.p; // direction hit point to light
+        double light_distance = to_light.length();
+        vec3 light_dir = to_light / light_distance;
+
+        ray shadow_ray(rec.p, light_dir); // construct shadow ray
+        hit_record shadow_rec;
+        for (const auto &objj : world) // shadow ray check if there is any blockage between hitpoint and light source
+        {
+            if (objj->hit(shadow_ray, interval(0.01, light_distance), shadow_rec))
+            {
+                inShadow = true;
+                break;
+                
+            }
+        }
 
         color N = unit_vector(rec.normal);
         if(inShadow){
             return base * 0.2; // 20% ambient lighting in shadow
         }
         else{
-            int sample = 10;
+            int sample = 5;
             double mean_lightning = 0;
             for(int i = 0 ; i < sample ; ++i){
                 vec3 scatter_lightDir = light_dir + (random_in_unit_sphere() * 0.05);
@@ -59,6 +60,7 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
             mean_lightning /= sample;
             return base * mean_lightning;
         }
+        // return rec.hit_surf_col;
     }
 
 
@@ -71,7 +73,7 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
 int main(){
     int samples = 1;
 
-    int world_width = 400;
+    int world_width = 250;
     double aspect_ratio = 16.0/ 9.0;
     int world_height = world_width / aspect_ratio;
 
@@ -101,19 +103,18 @@ int main(){
     std::vector<std::shared_ptr<hittable>> world;
 
     // auto ball = std::make_shared<sphere>(point3(0, 0, -1), 0.5, color(0.5, 1, 0));
-    // auto ground = std::make_shared<sphere>(point3(0, -100.5, -1), 100.0, color(0.9, 0.9, 0.8));
-    // auto sample_plane = std::make_shared<plane>(point3(0, -0.5, 0), vec3(0.2, 1, 0), color(1, 1, 0));
+    auto ground = std::make_shared<sphere>(point3(0, -100.65, -1), 100.0, color(0.9, 0.9, 0));
+    // auto sample_plane = std::make_shared<plane>(point3(0, 0.4, 0), vec3(0, 1, 0), color(1, 1, 0));
     // auto sample_triangle = std::make_shared<triangle>(point3(0, 1, -1), point3(-2, -1, -1), point3(2, -1, -1));
 
     // world.push_back(ball);
-    // world.push_back(ground);
+    world.push_back(ground);
     // world.push_back(sample_plane);
     // world.push_back(sample_triangle);
 
-    auto mesh = loadOBJ("/home/mahid/Dev/Projects/simple_Raytracer/src/test.obj", color(0.7, 0.7, 0.9));
+    auto mesh = loadOBJ("/home/mahid/Dev/Projects/simple_Raytracer/src/test.obj", color(0.7, 0.9, 0.9));
     for (auto& tri : mesh){
         auto temp = std::make_shared<triangle>(tri);
-        std::clog << "lol";
         world.push_back(temp);
     }
 
@@ -124,6 +125,7 @@ int main(){
 
     std::cout << "P3\n" << world_width << " " << world_height << '\n' <<"255\n";
     for(int j = 0 ; j < world_height ; j++){
+        std::clog << "scanline remains: " << world_height - j << '\n';
         for(int i = 0 ; i < world_width ; i++){
 
             //move from one center to another center of pixel

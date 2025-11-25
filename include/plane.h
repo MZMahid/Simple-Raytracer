@@ -27,11 +27,8 @@ public:
         if (dot(ray.get_direction(), rec.normal) > 0)
             rec.normal = -rec.normal;
         rec.normal = norm;
-
-        //for creating interesing pattern
-        double s = sin(10 * rec.p.x()) * sin(10 * rec.p.z());
-        rec.hit_surf_col = color(0.5 + 0.5 * s, 0.5 - 0.5 * s, 0.55);
-        // rec.hit_surf_col = surf_col;
+        
+        rec.hit_surf_col = surf_col;
 
         return true;
 
