@@ -6,6 +6,10 @@
 #include"interval.h"
 #include"obj_loader.h"
 
+#ifndef RES_DIR
+#define RES_DIR "" // to be redefined at compile time from CmakeLists
+#endif
+
 //this function runs for every single ray and returns final color for that ray.
 color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_ptr<hittable>> &world)
 {
@@ -112,7 +116,8 @@ int main(){
     // world.push_back(sample_plane);
     // world.push_back(sample_triangle);
 
-    auto mesh = loadOBJ("/home/mahid/Dev/Projects/simple_Raytracer/src/test.obj", color(0.7, 0.9, 0.9));
+    std::string objPath = std::string(RES_DIR) + "/tree.obj";
+    auto mesh = loadOBJ(objPath, color(0.7, 0.9, 0.9));
     for (auto& tri : mesh){
         auto temp = std::make_shared<triangle>(tri);
         world.push_back(temp);
