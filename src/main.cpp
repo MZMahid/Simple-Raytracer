@@ -75,9 +75,9 @@ color get_ray_col(const ray &r, hit_record &rec, const std::vector<std::shared_p
 }
 
 int main(){
-    int samples = 1;
+    int samples = 20;
 
-    int world_width = 250;
+    int world_width = 400;
     double aspect_ratio = 16.0/ 9.0;
     int world_height = world_width / aspect_ratio;
 
