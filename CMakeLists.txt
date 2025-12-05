@@ -8,4 +8,7 @@ include_directories(include)
 
 add_executable(RayTracer
     src/main.cpp
+    src/tiny_obj_loader.cc
 )
+
+target_compile_definitions(RayTracer PRIVATE RES_DIR="${PROJECT_SOURCE_DIR}/resources")
